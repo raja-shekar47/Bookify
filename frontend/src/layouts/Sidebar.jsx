@@ -4,7 +4,6 @@ import {
   Map,
   TicketCheck,
   LifeBuoy,
-  Mountain,
 } from "lucide-react";
 
 const Sidebar = () => {
@@ -51,10 +50,8 @@ const Sidebar = () => {
       {/* ---------- Footer Card ---------- */}
       <div className="p-4 border-t border-slate-800">
         <Link to="/admin">
-          <button className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-            <span className="text-sm font-medium text-gray-700 text-white">
-              Admin page
-            </span>
+          <button className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200">
+            Admin Page
           </button>
         </Link>
         <div className="rounded-xl bg-gradient-to-br from-emerald-500/10 to-emerald-400/5 border border-emerald-500/20 p-3">

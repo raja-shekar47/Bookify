@@ -2,11 +2,6 @@ import React from "react";
 import { useState } from "react";
 
 const BookingSearch = () => {
-  const [checkIn, setCheckIn] = useState("");
-  const [checkOut, setCheckOut] = useState("");
-  const [guests, setGuests] = useState(1);
-  const [rooms, setRooms] = useState(1);
-
   const [formData, setFormData] = useState({
     checkIn: "",
     checkOut: "",
@@ -39,7 +34,7 @@ const BookingSearch = () => {
           <input
             name="checkIn"
             type="date"
-            value={checkIn}
+            value={formData.checkIn}
             onChange={handleFormSubmit}
             className="border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
           />
@@ -53,7 +48,7 @@ const BookingSearch = () => {
           <input
             name="checkOut"
             type="date"
-            value={checkOut}
+            value={formData.checkOut}
             onChange={handleFormSubmit}
             className="border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
           />
@@ -66,7 +61,7 @@ const BookingSearch = () => {
           </label>
           <select
             name="guests"
-            value={guests}
+            value={formData.guests}
             onChange={handleFormSubmit}
             className="border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
           >
@@ -85,7 +80,7 @@ const BookingSearch = () => {
           </label>
           <select
             name="rooms"
-            value={rooms}
+            value={formData.rooms}
             onChange={handleFormSubmit}
             className="border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
           >
