@@ -1,16 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 
-const BookingSearch = () => {
+const BookingSearch = ({ buttonLabel, defaultValues, onSearch }) => {
   const [formData, setFormData] = useState({
     checkIn: "",
     checkOut: "",
     guests: 1,
     rooms: 1,
   });
-  const [bookings, setBookings] = useState([]);
 
-  const handleFormSubmit = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -18,9 +17,19 @@ const BookingSearch = () => {
     }));
   };
 
+  useEffect(() => {
+    if (defaultValues) {
+      setFormData((prev) => ({
+        ...prev,
+        ...defaultValues,
+      }));
+    }
+  }, [defaultValues]);
+
   const handleSearch = () => {
-    setBookings((prev) => [...prev, formData]);
-    console.log("All bookings:", [...bookings, formData]);
+    if (onSearch) {
+      onSearch(formData);
+    }
   };
 
   return (
@@ -35,7 +44,7 @@ const BookingSearch = () => {
             name="checkIn"
             type="date"
             value={formData.checkIn}
-            onChange={handleFormSubmit}
+            onChange={handleChange}
             className="border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
           />
         </div>
@@ -49,7 +58,7 @@ const BookingSearch = () => {
             name="checkOut"
             type="date"
             value={formData.checkOut}
-            onChange={handleFormSubmit}
+            onChange={handleChange}
             className="border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
           />
         </div>
@@ -62,7 +71,7 @@ const BookingSearch = () => {
           <select
             name="guests"
             value={formData.guests}
-            onChange={handleFormSubmit}
+            onChange={handleChange}
             className="border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
           >
             {[1, 2, 3, 4, 5].map((num) => (
@@ -81,7 +90,7 @@ const BookingSearch = () => {
           <select
             name="rooms"
             value={formData.rooms}
-            onChange={handleFormSubmit}
+            onChange={handleChange}
             className="border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
           >
             {[1, 2, 3, 4].map((num) => (
@@ -97,7 +106,7 @@ const BookingSearch = () => {
           onClick={handleSearch}
           className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-6 py-3 transition duration-300 shadow-lg"
         >
-          Search
+          {buttonLabel}
         </button>
       </div>
     </div>
