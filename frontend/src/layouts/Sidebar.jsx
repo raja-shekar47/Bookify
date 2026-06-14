@@ -19,7 +19,7 @@ const Sidebar = () => {
       {/* ---------- Brand ---------- */}
       <div className="px-6 py-5 border-b border-slate-800">
         <h2 className="text-xl font-semibold tracking-wide flex items-center gap-2 text-white">
-          OotyTrips 1
+          OotyTrips 7
         </h2>
         <p className="text-md text-slate-400 mt-1">
           Discover the Queen of Hills
