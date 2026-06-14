@@ -9,9 +9,9 @@ import {
 const Sidebar = () => {
   const menuItems = [
     { name: "Home", path: "/", icon: LayoutDashboard },
-    { name: "Explore Ooty", path: "/contact", icon: Map },
-    { name: "My Bookings", path: "/contact", icon: TicketCheck },
-    { name: "Help & Support", path: "/contact", icon: LifeBuoy },
+    { name: "transport", path: "/transport", icon: LifeBuoy },
+    { name: "explore", path: "/review", icon: TicketCheck },
+    { name: "contact", path: "/contact", icon: Map },
   ];
 
   return (

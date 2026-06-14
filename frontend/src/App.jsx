@@ -8,6 +8,7 @@ import AddRoom from "./pages/Admin.jsx";
 import axios from "axios";
 import { useEffect } from "react";
 import RoomDetails from "./pages/RoomDetails.jsx";
+import Reviews from "./pages/Review.jsx";
 
 function App() {
   useEffect(() => {
@@ -26,6 +27,7 @@ function App() {
       <Route path="/" element={<MainLayout />}>
         <Route index element={<Home />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/review" element={<Reviews />} />
 
         <Route path="/rooms/:roomId" element={<RoomDetails />} />
       </Route>

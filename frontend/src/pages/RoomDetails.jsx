@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import API from "../services/api";
-import BookingSearch from "../features/booking/BookingSearch";
 
 const RoomDetails = () => {
   const { roomId } = useParams();
@@ -14,6 +13,8 @@ const RoomDetails = () => {
   const handleSearch = (data) => {
     setSearchData(data);
   };
+
+  const [isBooking, setIsBooking] = useState(false); 
 
   useEffect(() => {
     const fetchRoomDetails = async () => {
@@ -92,11 +93,6 @@ const RoomDetails = () => {
         </button>
       </Link>
 
-      <BookingSearch
-        buttonLabel="modify"
-        defaultValues={searchData}
-        onSearch={handleSearch}
-      />
       <div className="bg-white shadow-lg rounded-2xl overflow-hidden">
         <img
           src={roomDetails.image}
