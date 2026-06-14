@@ -1,156 +1,89 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { FaStar } from "react-icons/fa";
 
 const Reviews = () => {
   const [reviews, setReviews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // Form
-  const [name, setName] = useState("");
-  const [comment, setComment] = useState("");
-  const [rating, setRating] = useState(5);
+  // useEffect(() => {
+  //   const fetchReviews = async () => {
+  //     try {
+  //       const { data } = await axios.get(
+  //         "https://jsonplaceholder.typicode.com/comments?_limit=10",
+  //       );
 
-  const fetchReviews = useCallback(async () => {
-    try {
-      const { data } = await axios.get("http://localhost:5000/api/reviews");
-      setReviews(data);
-    } catch (error) {
-      console.error(error);
-    }
-  }, [setReviews]); // setReviews is stable, but including it is harmless
+  //       const formattedReviews = data.map((item) => ({
+  //         id: item.id,
+  //         comment: item.body,
+  //         name: item.name,
+  //         email: item.email,
+  //       }));
+
+  //       setReviews(formattedReviews);
+  //     } catch (err) {
+  //       setError(err.message || "Failed to load reviews.");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchReviews();
+  // }, []);
 
   useEffect(() => {
-    fetchReviews();
-  }, [fetchReviews]); // fetchReviews is now a dependency
+    const fetchReviews = async () => {
+      try {
+        const { data } = await axios.get(
+          "https://jsonplaceholder.typicode.com/comments?_limit=10",
+        );
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post("http://localhost:5000/api/reviews", {
-        name,
-        rating,
-        comment,
-      });
-      alert("Review submitted for approval!");
-      setName("");
-      setComment("");
-    } catch (error) {
-      console.error(error);
-      alert("Failed to submit review");
-    }
-  };
+        const formattedReviews = data.map((item) => {
+          return {
+            id: item.id,
+            comment: item.body,
+            name: item.name,
+            email: item.email,
+          };
+        });
+        setReviews(formattedReviews);
+      } catch (err) {
+        setError(err.message || "Failed to load reviews.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReviews();
+  }, []);
+
+  if (loading) {
+    return <div className="p-6 text-center">Loading reviews...</div>;
+  }
+
+  if (error) {
+    return <div className="p-6 text-center text-red-500">{error}</div>;
+  }
 
   return (
-    <div className="container">
-      <h1 className="heading">Guest Experiences</h1>
+    <div className="max-w-4xl mx-auto px-6 py-10">
+      <h2 className="mb-8 text-3xl font-bold text-gray-800">
+        Customer Reviews
+      </h2>
 
-      <div className="responsive-grid">
-        {/* List */}
-        <div>
-          {reviews.length === 0 ? (
-            <p>No reviews yet.</p>
-          ) : (
-            reviews.map((r) => (
-              <div
-                key={r._id}
-                style={{
-                  marginBottom: "2rem",
-                  background: "white",
-                  padding: "1.5rem",
-                  borderRadius: "8px",
-                  boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
-                }}
-              >
-                <div
-                  style={{ display: "flex", justifyContent: "space-between" }}
-                >
-                  <h4 style={{ fontSize: "1.1rem" }}>{r.name}</h4>
-                  <div style={{ color: "#f1c40f" }}>
-                    {[...Array(5)].map((_, i) => (
-                      <FaStar
-                        key={i}
-                        color={i < r.rating ? "#f1c40f" : "#ddd"}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <p
-                  style={{
-                    marginTop: "0.5rem",
-                    color: "#555",
-                    fontStyle: "italic",
-                  }}
-                >
-                  "{r.comment}"
-                </p>
-              </div>
-            ))
-          )}
-        </div>
-
-        {/* Form */}
-        <div
-          className="card"
-          style={{ padding: "2rem", height: "fit-content" }}
-        >
-          <h3 style={{ marginBottom: "1.5rem" }}>Share Your Stay</h3>
-          <form
-            onSubmit={handleSubmit}
-            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+      <div className="space-y-4">
+        {reviews.map((review) => (
+          <div
+            key={review.id}
+            className="rounded-xl bg-white p-6 shadow-sm border"
           >
-            <input
-              placeholder="Your Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              style={{
-                padding: "10px",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-              }}
-              required
-            />
+            <p className="mb-4 text-gray-700">{review.comment}</p>
 
             <div>
-              <label
-                style={{
-                  display: "block",
-                  marginBottom: "5px",
-                  fontSize: "0.9rem",
-                }}
-              >
-                Rating
-              </label>
-              <select
-                value={rating}
-                onChange={(e) => setRating(Number(e.target.value))}
-                style={{ padding: "10px", width: "100%" }}
-              >
-                <option value="5">5 Stars - Excellent</option>
-                <option value="4">4 Stars - Good</option>
-                <option value="3">3 Stars - Average</option>
-                <option value="2">2 Stars - Poor</option>
-                <option value="1">1 Star - Terrible</option>
-              </select>
+              <p className="font-medium text-gray-900">{review.name}</p>
+              <p className="text-sm text-gray-500">{review.email}</p>
             </div>
-
-            <textarea
-              placeholder="Write your review..."
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              rows="5"
-              style={{
-                padding: "10px",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-              }}
-              required
-            ></textarea>
-
-            <button className="btn" type="submit">
-              Submit Review
-            </button>
-          </form>
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   );
