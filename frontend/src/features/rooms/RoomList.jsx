@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import API from "../../services/api";
-import BookingSearch from "../booking/BookingSearch";
 import { Link } from "react-router-dom";
 
 const RoomList = () => {
@@ -16,9 +15,6 @@ const RoomList = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
-      <div className="mb-6">
-        <BookingSearch />
-      </div>
 
       <h2 className="text-3xl font-bold text-gray-800 mb-8">Our Cottages</h2>
 

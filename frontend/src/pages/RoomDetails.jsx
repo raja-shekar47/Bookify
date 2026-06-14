@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import API from "../services/api";
+import BookingSearch from "../features/booking/BookingSearch";
 
 const RoomDetails = () => {
   const { roomId } = useParams();
@@ -9,19 +10,10 @@ const RoomDetails = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [isBooking, setIsBooking] = useState(false);
-
-  // Booking Form State
-  const [bookingData, setBookingData] = useState({
-    name: "",
-    mobile: "",
-    email: "",
-    date: "",
-    rooms: 1,
-    roomType: "AC",
-  });
-
-  console.log("data", bookingData);
+  const [searchData, setSearchData] = useState();
+  const handleSearch = (data) => {
+    setSearchData(data);
+  };
 
   useEffect(() => {
     const fetchRoomDetails = async () => {
@@ -100,6 +92,11 @@ const RoomDetails = () => {
         </button>
       </Link>
 
+      <BookingSearch
+        buttonLabel="modify"
+        defaultValues={searchData}
+        onSearch={handleSearch}
+      />
       <div className="bg-white shadow-lg rounded-2xl overflow-hidden">
         <img
           src={roomDetails.image}
@@ -117,8 +114,6 @@ const RoomDetails = () => {
           <p className="text-gray-600">{roomDetails.description}</p>
 
           <p className="text-xl font-semibold">₹{roomDetails.price}</p>
-
-          <p className="text-gray-600">{roomDetails.address}</p>
         </div>
 
         <button
