@@ -17,7 +17,11 @@ const roomSchema = new mongoose.Schema(
     address: {
       type: String,
       required: true,
-    },
+    }, 
+    status: {
+      type: String,
+      required: true,
+    } 
   },
   { timestamps: true },
 );
