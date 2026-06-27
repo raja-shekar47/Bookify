@@ -8,6 +8,7 @@ function AddRoom() {
     title: "",
     price: "",
     address: "",
+    status: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -22,7 +23,7 @@ function AddRoom() {
   };
 
   const validateForm = () => {
-    if (!room.image || !room.title || !room.price || !room.address) {
+    if (!room.image || !room.title || !room.price || !room.address || !room.status) {
       return "All fields are required.";
     }
 
@@ -142,6 +143,22 @@ function AddRoom() {
               placeholder="Ooty, Tamil Nadu"
               className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
             />
+          </div>
+
+          {/* room status */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Room Status
+            </label>
+            <select
+              name="status"
+              value={room.status}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+            >
+              <option value="available">Available</option>
+              <option value="booked">Booked</option>
+            </select>
           </div>
 
           {/* Error */}

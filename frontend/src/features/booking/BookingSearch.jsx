@@ -32,6 +32,9 @@ const BookingSearch = ({ buttonLabel, defaultValues, onSearch }) => {
     }
   };
 
+  console.log("button search form data", formData);
+  
+
   return (
     <div className="w-full max-w-6xl mx-auto bg-white shadow-2xl rounded-2xl p-6 md:p-8">
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
