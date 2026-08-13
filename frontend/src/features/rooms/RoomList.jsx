@@ -1,58 +1,117 @@
-import React, { useEffect, useState } from "react";
-import API from "../../services/api";
-import { Link } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import API, { getErrorMessage } from "../../services/api";
+import RoomCard from "./RoomCard";
+import { CardSkeletonGrid, EmptyState, ErrorState } from "../../components/Feedback";
+import { useSearch } from "../../context/searchStore";
 
-const RoomList = () => {
+const FILTERS = [
+  { key: "all", label: "All rooms" },
+  { key: "available", label: "Available" },
+  { key: "Family Suite", label: "Family suites" },
+  { key: "Deluxe Room", label: "Deluxe" },
+  { key: "Standard Room", label: "Standard" },
+  { key: "Apartment", label: "Apartments" },
+];
+
+/**
+ * @param {number} [limit]      cap the number of cards shown
+ * @param {boolean} [showFilters]
+ * @param {boolean} [respectSearch] hide rooms too small for the party size
+ */
+const RoomList = ({ limit, showFilters = true, respectSearch = false }) => {
   const [rooms, setRooms] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [filter, setFilter] = useState("all");
+  const { criteria } = useSearch();
 
-  useEffect(() => {
-    API.get("/rooms").then((res) => setRooms(res.data));
+  const fetchRooms = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const { data } = await API.get("/rooms");
+      setRooms(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setError(getErrorMessage(err, "Could not load rooms."));
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-    if (rooms.length === 0) return <div>Loading...</div>;
-    
-    console.log("first", rooms)
+  useEffect(() => {
+    fetchRooms();
+  }, [fetchRooms]);
+
+  const visibleRooms = useMemo(() => {
+    let list = rooms;
+
+    if (filter === "available") {
+      list = list.filter((room) => room.status === "available");
+    } else if (filter !== "all") {
+      list = list.filter((room) => room.type === filter);
+    }
+
+    if (respectSearch && criteria.guests) {
+      list = list.filter(
+        (room) => (room.maxGuests || 2) >= Number(criteria.guests),
+      );
+    }
+
+    return limit ? list.slice(0, limit) : list;
+  }, [rooms, filter, limit, respectSearch, criteria.guests]);
+
+  if (loading) return <CardSkeletonGrid count={limit || 3} />;
+
+  if (error) return <ErrorState message={error} onRetry={fetchRooms} />;
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10">
+    <div className="space-y-6">
+      {showFilters && rooms.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {FILTERS.map(({ key, label }) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setFilter(key)}
+              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                filter === key
+                  ? "bg-slate-900 text-white shadow-md"
+                  : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      )}
 
-      <h2 className="text-3xl font-bold text-gray-800 mb-8">Our Cottages</h2>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-        {rooms.map((room) => (
-          <div
-            key={room._id}
-            className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"
-          >
-            {/* Image */}
-            <div className="relative overflow-hidden">
-              <img
-                src={room.image}
-                alt={room.title}
-                className="w-full h-56 object-cover transform group-hover:scale-110 transition duration-500"
-              />
-              <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-sm font-semibold text-green-600 shadow">
-                ₹{room.price}
-              </div>
-            </div>
-
-            {/* Content */}
-            <div className="p-5 space-y-3">
-              <h3 className="text-lg font-semibold text-gray-800">
-                {room.title}
-              </h3>
-
-              <p className="text-sm text-gray-500">{room.address}</p>
-
-              <Link to={`/rooms/${room._id}`}>
-                <button className="w-full mt-4 bg-blue-600 text-white py-2 rounded-xl font-medium hover:bg-blue-700 active:scale-95 transition duration-200">
-                  View Details
-                </button>
-              </Link>
-            </div>
-          </div>
-        ))}
-      </div>
+      {visibleRooms.length === 0 ? (
+        <EmptyState
+          title="No rooms match this filter"
+          description={
+            respectSearch
+              ? `We don't have a room for ${criteria.guests} guests under this filter. Try fewer guests or clear the filter.`
+              : "Add rooms from the admin console, or pick a different filter."
+          }
+          action={
+            filter !== "all" && (
+              <button
+                type="button"
+                onClick={() => setFilter("all")}
+                className="btn-ghost"
+              >
+                Clear filter
+              </button>
+            )
+          }
+        />
+      ) : (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+          {visibleRooms.map((room) => (
+            <RoomCard key={room._id} room={room} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

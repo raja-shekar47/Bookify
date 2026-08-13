@@ -1,63 +1,103 @@
 @import "tailwindcss";
 
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@theme {
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-sans:
+    "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    sans-serif;
 
+  --color-brand-50: #eefbf5;
+  --color-brand-100: #d5f5e6;
+  --color-brand-200: #aeead1;
+  --color-brand-300: #79d8b5;
+  --color-brand-400: #43be94;
+  --color-brand-500: #1fa47a;
+  --color-brand-600: #108462;
+  --color-brand-700: #0d6a51;
+  --color-brand-800: #0e5442;
+  --color-brand-900: #0d4637;
+
+  --color-sand-50: #faf8f4;
+  --color-sand-100: #f3efe6;
+  --color-sand-200: #e7dfd0;
+}
+
+:root {
+  font-family: var(--font-sans);
+  line-height: 1.55;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: #0f172a;
+  background-color: var(--color-sand-50);
 }
 
 html,
 body,
 #root {
-  height: 100%;
-  width: 100%;
+  min-height: 100%;
   margin: 0;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+  padding: 0;
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  background-color: var(--color-sand-50);
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
 }
 
-button:hover {
-  border-color: #646cff;
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
 }
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 9999px;
+  border: 3px solid transparent;
+  background-clip: content-box;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+@layer components {
+  .card-surface {
+    @apply rounded-2xl border border-slate-200/80 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04),0_12px_32px_-16px_rgba(15,23,42,0.18)];
   }
-  a:hover {
-    color: #747bff;
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/20 transition hover:bg-brand-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none;
   }
-  button {
-    background-color: #f9f9f9;
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 active:scale-[0.98];
   }
+
+  .field-label {
+    @apply mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500;
+  }
+
+  .field-input {
+    @apply w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-brand-400 focus:ring-4 focus:ring-brand-500/10;
+  }
+
+  .section-title {
+    @apply font-display text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl;
+  }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.45s ease-out both;
 }
