@@ -7,11 +7,15 @@ const {
   updateTransport,
   deleteTransport,
 } = require("../controllers/transportControllers");
+const { adminOnly } = require("../middleware/authMiddleware");
 
-router.post("/", createTransport);
+// Public
 router.get("/", getTransports);
 router.get("/:id", getTransportById);
-router.put("/:id", updateTransport);
-router.delete("/:id", deleteTransport);
+
+// Admin only
+router.post("/", adminOnly, createTransport);
+router.put("/:id", adminOnly, updateTransport);
+router.delete("/:id", adminOnly, deleteTransport);
 
 module.exports = router;

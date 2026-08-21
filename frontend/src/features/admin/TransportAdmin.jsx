@@ -3,6 +3,7 @@ import { Pencil, Plus, Trash2 } from "lucide-react";
 import API, { getErrorMessage } from "../../services/api";
 import Modal from "../../components/Modal";
 import ConfirmDialog from "../../components/ConfirmDialog";
+import ImageField from "../../components/ImageField";
 import SmartImage from "../../components/SmartImage";
 import StatusBadge from "../../components/StatusBadge";
 import { EmptyState, ErrorState, Spinner } from "../../components/Feedback";
@@ -303,16 +304,14 @@ const TransportAdmin = ({ onChanged }) => {
             </div>
 
             <div className="sm:col-span-2">
-              <label className="field-label" htmlFor="v-image">
-                Image URL or path *
-              </label>
-              <input
-                id="v-image"
-                name="image"
+              <ImageField
+                label="Vehicle photo *"
                 value={form.image}
-                onChange={handleChange}
-                placeholder="https://… or /images/transport/innova.jpg"
-                className="field-input"
+                onChange={(image) => {
+                  setForm((prev) => ({ ...prev, image }));
+                  setFormError("");
+                }}
+                hint="Paste any public image address ending in .jpg, .png or .webp."
               />
             </div>
 

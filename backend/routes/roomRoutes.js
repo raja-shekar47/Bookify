@@ -7,11 +7,15 @@ const {
   updateRoom,
   deleteRoom,
 } = require("../controllers/roomControllers");
+const { adminOnly } = require("../middleware/authMiddleware");
 
-router.post("/", createRoom);
+// Public — guests browse rooms without signing in
 router.get("/", getRooms);
 router.get("/:id", getRoomById);
-router.put("/:id", updateRoom);
-router.delete("/:id", deleteRoom);
+
+// Admin only
+router.post("/", adminOnly, createRoom);
+router.put("/:id", adminOnly, updateRoom);
+router.delete("/:id", adminOnly, deleteRoom);
 
 module.exports = router;

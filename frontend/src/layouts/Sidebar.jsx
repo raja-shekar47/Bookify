@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import { SITE, telHref } from "../config/site";
+import { ROLE_LABELS, useAuth } from "../context/authStore";
 
 const menuItems = [
   { name: "Home", path: "/", icon: Home, end: true },
@@ -20,6 +21,8 @@ const menuItems = [
 ];
 
 const Sidebar = ({ onNavigate }) => {
+  const { user, isAdmin } = useAuth();
+
   return (
     <aside className="flex h-full w-72 flex-col border-r border-slate-800/60 bg-slate-900 text-slate-200">
       {/* ---------- Brand ---------- */}
@@ -92,23 +95,26 @@ const Sidebar = ({ onNavigate }) => {
           </p>
         </a>
 
-        <Link
-          to="/admin"
-          onClick={onNavigate}
-          className="group flex w-full items-center gap-3 rounded-xl border border-slate-700/80 bg-slate-800/60 px-4 py-3 text-left transition hover:border-brand-500/40 hover:bg-slate-800"
-        >
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-slate-700/80 text-slate-300 transition group-hover:bg-brand-500/15 group-hover:text-brand-300">
-            <ShieldCheck className="h-[18px] w-[18px]" />
-          </span>
-          <span className="min-w-0">
-            <span className="block text-sm font-semibold text-white">
-              Admin Console
+        {/* Only staff ever see the console entry point. */}
+        {isAdmin && (
+          <Link
+            to="/admin"
+            onClick={onNavigate}
+            className="group flex w-full items-center gap-3 rounded-xl border border-slate-700/80 bg-slate-800/60 px-4 py-3 text-left transition hover:border-brand-500/40 hover:bg-slate-800"
+          >
+            <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-slate-700/80 text-slate-300 transition group-hover:bg-brand-500/15 group-hover:text-brand-300">
+              <ShieldCheck className="h-[18px] w-[18px]" />
             </span>
-            <span className="block truncate text-xs text-slate-400">
-              Rooms · Transport · Bookings
+            <span className="min-w-0">
+              <span className="block text-sm font-semibold text-white">
+                Admin Console
+              </span>
+              <span className="block truncate text-xs text-slate-400">
+                Signed in as {ROLE_LABELS[user.role]}
+              </span>
             </span>
-          </span>
-        </Link>
+          </Link>
+        )}
 
         <p className="pt-1 text-center text-[11px] text-slate-600">
           © {new Date().getFullYear()} {SITE.name}

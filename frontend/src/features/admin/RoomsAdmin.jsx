@@ -3,6 +3,7 @@ import { Pencil, Plus, Trash2 } from "lucide-react";
 import API, { getErrorMessage } from "../../services/api";
 import Modal from "../../components/Modal";
 import ConfirmDialog from "../../components/ConfirmDialog";
+import ImageField from "../../components/ImageField";
 import SmartImage from "../../components/SmartImage";
 import StatusBadge from "../../components/StatusBadge";
 import { EmptyState, ErrorState, Spinner } from "../../components/Feedback";
@@ -294,28 +295,15 @@ const RoomsAdmin = ({ onChanged }) => {
             </div>
 
             <div className="sm:col-span-2">
-              <label className="field-label" htmlFor="r-image">
-                Image URL or path *
-              </label>
-              <input
-                id="r-image"
-                name="image"
+              <ImageField
+                label="Room photo *"
                 value={form.image}
-                onChange={handleChange}
-                placeholder="/images/rooms/deluxe-double.jpg"
-                className="field-input"
+                onChange={(image) => {
+                  setForm((prev) => ({ ...prev, image }));
+                  setFormError("");
+                }}
+                hint="Paste any public image address ending in .jpg, .png or .webp."
               />
-              <p className="mt-1.5 text-xs text-slate-500">
-                Drop photos into{" "}
-                <code className="rounded bg-slate-100 px-1">
-                  frontend/public/images/rooms/
-                </code>{" "}
-                and reference them as{" "}
-                <code className="rounded bg-slate-100 px-1">
-                  /images/rooms/name.jpg
-                </code>
-                , or paste a full https:// URL.
-              </p>
             </div>
 
             <div>

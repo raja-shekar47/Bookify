@@ -5,9 +5,13 @@ const {
   getReviews,
   deleteReview,
 } = require("../controllers/reviewControllers");
+const { adminOnly } = require("../middleware/authMiddleware");
 
-router.post("/", createReview);
+// Public — anyone can read reviews and leave one
 router.get("/", getReviews);
-router.delete("/:id", deleteReview);
+router.post("/", createReview);
+
+// Admin only
+router.delete("/:id", adminOnly, deleteReview);
 
 module.exports = router;

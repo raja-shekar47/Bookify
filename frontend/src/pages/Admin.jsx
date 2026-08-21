@@ -6,22 +6,28 @@ import {
   CalendarCheck,
   CarFront,
   IndianRupee,
+  LogOut,
   Mountain,
   Star,
+  Users,
 } from "lucide-react";
 import API from "../services/api";
 import RoomsAdmin from "../features/admin/RoomsAdmin";
 import TransportAdmin from "../features/admin/TransportAdmin";
 import BookingsAdmin from "../features/admin/BookingsAdmin";
 import ReviewsAdmin from "../features/admin/ReviewsAdmin";
+import UsersAdmin from "../features/admin/UsersAdmin";
 import { formatCurrency } from "../utils/format";
 import { SITE } from "../config/site";
+import { ROLE_LABELS, useAuth } from "../context/authStore";
 
 const TABS = [
   { key: "bookings", label: "Bookings", icon: CalendarCheck },
   { key: "rooms", label: "Rooms", icon: BedDouble },
   { key: "transport", label: "Transport", icon: CarFront },
   { key: "reviews", label: "Reviews", icon: Star },
+  // Managing people belongs to the super admin alone.
+  { key: "users", label: "People", icon: Users, superAdminOnly: true },
 ];
 
 const StatCard = ({ icon: Icon, label, value, hint, loading }) => (
@@ -46,6 +52,7 @@ const StatCard = ({ icon: Icon, label, value, hint, loading }) => (
 );
 
 const Admin = () => {
+  const { user, isSuperAdmin, signOut } = useAuth();
   const [tab, setTab] = useState("bookings");
   const [statsLoading, setStatsLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -103,18 +110,29 @@ const Admin = () => {
                 {SITE.name} · Admin
               </p>
               <p className="text-xs text-slate-400">
-                Manage rooms, transport, bookings and reviews
+                {user?.name} · {ROLE_LABELS[user?.role]}
               </p>
             </div>
           </div>
 
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800/60 px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:border-brand-500/40 hover:bg-slate-800 hover:text-white"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to site
-          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800/60 px-4 py-2.5 text-sm font-semibold text-slate-200 transition hover:border-brand-500/40 hover:bg-slate-800 hover:text-white"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to site
+            </Link>
+
+            <button
+              type="button"
+              onClick={signOut}
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-700 bg-slate-800/60 px-4 py-2.5 text-sm font-semibold text-slate-300 transition hover:border-rose-500/40 hover:bg-slate-800 hover:text-rose-300"
+            >
+              <LogOut className="h-4 w-4" />
+              Sign out
+            </button>
+          </div>
         </div>
       </header>
 
@@ -153,7 +171,9 @@ const Admin = () => {
 
         {/* ---------------- Tabs ---------------- */}
         <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-px">
-          {TABS.map(({ key, label, icon: Icon }) => (
+          {TABS.filter(
+            ({ superAdminOnly }) => !superAdminOnly || isSuperAdmin,
+          ).map(({ key, label, icon: Icon }) => (
             <button
               key={key}
               type="button"
@@ -176,6 +196,7 @@ const Admin = () => {
           {tab === "rooms" && <RoomsAdmin onChanged={loadStats} />}
           {tab === "transport" && <TransportAdmin onChanged={loadStats} />}
           {tab === "reviews" && <ReviewsAdmin onChanged={loadStats} />}
+          {tab === "users" && isSuperAdmin && <UsersAdmin />}
         </div>
       </div>
     </div>

@@ -7,11 +7,15 @@ const {
   updateBookingStatus,
   deleteBooking,
 } = require("../controllers/bookingControllers");
+const { adminOnly } = require("../middleware/authMiddleware");
 
+// Public — guests book and check their own booking by reference
 router.post("/", createBooking);
-router.get("/", getBookings);
 router.get("/reference/:reference", getBookingByReference);
-router.patch("/:id/status", updateBookingStatus);
-router.delete("/:id", deleteBooking);
+
+// Admin only — the full guest list is private
+router.get("/", adminOnly, getBookings);
+router.patch("/:id/status", adminOnly, updateBookingStatus);
+router.delete("/:id", adminOnly, deleteBooking);
 
 module.exports = router;

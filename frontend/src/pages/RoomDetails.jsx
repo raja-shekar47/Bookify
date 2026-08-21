@@ -74,9 +74,7 @@ const RoomDetails = () => {
         {/* ---------------- Left: gallery + details ---------------- */}
         <div className="space-y-6">
           <div className="card-surface overflow-hidden">
-            {/* key resets the load state when the guest picks a thumbnail */}
             <SmartImage
-              key={activeImage}
               src={activeImage}
               alt={room.title}
               fallbackLabel={room.title}
