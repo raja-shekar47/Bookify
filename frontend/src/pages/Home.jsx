@@ -58,7 +58,7 @@ const Home = () => {
           </span>
 
           <h1 className="mt-6 max-w-3xl font-display text-4xl font-semibold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-6xl">
-            Stay at {SITE.name}, your home in the Queen of Hills.
+            Stay at {SITE.name}, your home in the Queen of Hills with us.
           </h1>
 
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
