@@ -1,118 +1,154 @@
-import React, { useEffect } from "react";
 import { useState } from "react";
+import { CalendarDays, Search, Users, BedDouble } from "lucide-react";
+import { useSearch } from "../../context/searchStore";
+import { addDaysInput, nightsBetween, todayInput } from "../../utils/format";
 
-const BookingSearch = ({ buttonLabel, defaultValues, onSearch }) => {
-  const [formData, setFormData] = useState({
-    checkIn: "",
-    checkOut: "",
-    guests: 1,
-    rooms: 1,
-  });
+/**
+ * Stay search bar. Writes straight into the shared search context so the
+ * room list and booking form pick the same dates up.
+ */
+const BookingSearch = ({ buttonLabel = "Search rooms", onSearch }) => {
+  const { criteria, setCriteria } = useSearch();
+  // This bar is the only writer of the shared criteria, so seeding once is enough.
+  const [form, setForm] = useState(criteria);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+
+    setForm((prev) => {
+      const next = { ...prev, [name]: value };
+
+      // Keep check-out strictly after check-in.
+      if (name === "checkIn" && next.checkOut <= value) {
+        next.checkOut = addDaysInput(value, 1);
+      }
+      return next;
+    });
+    setError("");
   };
 
-  useEffect(() => {
-    if (defaultValues) {
-      setFormData((prev) => ({
-        ...prev,
-        ...defaultValues,
-      }));
-    }
-  }, [defaultValues]);
+  const nights = nightsBetween(form.checkIn, form.checkOut);
 
-  const handleSearch = () => {
-    if (onSearch) {
-      onSearch(formData);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!form.checkIn || !form.checkOut) {
+      setError("Pick both a check-in and a check-out date.");
+      return;
     }
+    if (nights < 1) {
+      setError("Check-out has to be at least one night after check-in.");
+      return;
+    }
+
+    const payload = {
+      ...form,
+      guests: Number(form.guests),
+      rooms: Number(form.rooms),
+    };
+    setCriteria(payload);
+    onSearch?.(payload);
   };
-
-  console.log("button search form data", formData);
-  
 
   return (
-    <div className="w-full max-w-6xl mx-auto bg-white shadow-2xl rounded-2xl p-6 md:p-8">
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+    <form
+      onSubmit={handleSubmit}
+      className="card-surface w-full p-4 sm:p-5"
+      noValidate
+    >
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[repeat(4,minmax(0,1fr))_auto] lg:items-end">
         {/* Check-in */}
-        <div className="flex flex-col">
-          <label className="text-sm font-semibold text-gray-600 mb-1">
-            Check In
+        <div>
+          <label className="field-label" htmlFor="checkIn">
+            <CalendarDays className="mr-1 inline h-3.5 w-3.5" />
+            Check in
           </label>
           <input
+            id="checkIn"
             name="checkIn"
             type="date"
-            value={formData.checkIn}
+            min={todayInput()}
+            value={form.checkIn}
             onChange={handleChange}
-            className="border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
+            className="field-input"
           />
         </div>
 
         {/* Check-out */}
-        <div className="flex flex-col">
-          <label className="text-sm font-semibold text-gray-600 mb-1">
-            Check Out
+        <div>
+          <label className="field-label" htmlFor="checkOut">
+            <CalendarDays className="mr-1 inline h-3.5 w-3.5" />
+            Check out
           </label>
           <input
+            id="checkOut"
             name="checkOut"
             type="date"
-            value={formData.checkOut}
+            min={addDaysInput(form.checkIn || todayInput(), 1)}
+            value={form.checkOut}
             onChange={handleChange}
-            className="border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
+            className="field-input"
           />
         </div>
 
         {/* Guests */}
-        <div className="flex flex-col">
-          <label className="text-sm font-semibold text-gray-600 mb-1">
+        <div>
+          <label className="field-label" htmlFor="guests">
+            <Users className="mr-1 inline h-3.5 w-3.5" />
             Guests
           </label>
           <select
+            id="guests"
             name="guests"
-            value={formData.guests}
+            value={form.guests}
             onChange={handleChange}
-            className="border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
+            className="field-input"
           >
-            {[1, 2, 3, 4, 5].map((num) => (
+            {[1, 2, 3, 4, 5, 6, 8, 10].map((num) => (
               <option key={num} value={num}>
-                {num} Adult{num > 1 && "s"}
+                {num} guest{num > 1 ? "s" : ""}
               </option>
             ))}
           </select>
         </div>
 
         {/* Rooms */}
-        <div className="flex flex-col">
-          <label className="text-sm font-semibold text-gray-600 mb-1">
+        <div>
+          <label className="field-label" htmlFor="rooms">
+            <BedDouble className="mr-1 inline h-3.5 w-3.5" />
             Rooms
           </label>
           <select
+            id="rooms"
             name="rooms"
-            value={formData.rooms}
+            value={form.rooms}
             onChange={handleChange}
-            className="border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
+            className="field-input"
           >
             {[1, 2, 3, 4].map((num) => (
               <option key={num} value={num}>
-                {num} Room{num > 1 && "s"}
+                {num} room{num > 1 ? "s" : ""}
               </option>
             ))}
           </select>
         </div>
 
-        {/* Search Button */}
-        <button
-          onClick={handleSearch}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl px-6 py-3 transition duration-300 shadow-lg"
-        >
+        <button type="submit" className="btn-primary h-[46px] lg:px-7">
+          <Search className="h-4 w-4" />
           {buttonLabel}
         </button>
       </div>
-    </div>
+
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs">
+        {nights > 0 && (
+          <span className="font-medium text-slate-500">
+            {nights} night{nights > 1 ? "s" : ""} selected
+          </span>
+        )}
+        {error && <span className="font-medium text-rose-600">{error}</span>}
+      </div>
+    </form>
   );
 };
 

@@ -1,14 +1,15 @@
 const mongoose = require("mongoose");
 
+const MONGO_URI =
+  process.env.MONGO_URI || "mongodb://127.0.0.1:27017/aaron_stays";
+
 const connectDB = async () => {
   try {
-    await mongoose.connect("mongodb://localhost:27017");
+    await mongoose.connect(MONGO_URI);
     console.log("MongoDB Connected ✅");
   } catch (error) {
-    {
-      console.error(error);
-      process.exit(1);
-    }
+    console.error("MongoDB connection failed ❌", error.message);
+    process.exit(1);
   }
 };
 

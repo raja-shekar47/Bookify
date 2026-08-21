@@ -1,35 +1,46 @@
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
-import MainLayout from "./layouts/MainLayout.jsx";
-import Home from "./pages/Home.jsx";
-import Contact from "./pages/Contact.jsx";
-import AddRoom from "./pages/Admin.jsx";
 
-import axios from "axios";
-import { useEffect } from "react";
+import MainLayout from "./layouts/MainLayout.jsx";
+import RequireRole from "./components/RequireRole.jsx";
+import Home from "./pages/Home.jsx";
+import Rooms from "./pages/Rooms.jsx";
 import RoomDetails from "./pages/RoomDetails.jsx";
+import Transport from "./pages/Transports.jsx";
 import Reviews from "./pages/Review.jsx";
+import Contact from "./pages/Contact.jsx";
+import BookingStatus from "./pages/BookingStatus.jsx";
+import Login from "./pages/Login.jsx";
+import NotFound from "./pages/NotFound.jsx";
+import Admin from "./pages/Admin.jsx";
 
 function App() {
-  useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/test")
-      .then((res) => console.log(res.data))
-      .catch((err) => console.log(err));
-  }, []);
-
   return (
     <Routes>
-      {/* Admin */}
-      <Route path="/admin" element={<AddRoom />} />
+      {/* Staff sign-in */}
+      <Route path="/login" element={<Login />} />
 
-      {/* Public with layout */}
+      {/* Admin console — admins and the super admin only */}
+      <Route
+        path="/admin"
+        element={
+          <RequireRole role="admin">
+            <Admin />
+          </RequireRole>
+        }
+      />
+
+      {/* Public site */}
       <Route path="/" element={<MainLayout />}>
         <Route index element={<Home />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/review" element={<Reviews />} />
-
-        <Route path="/rooms/:roomId" element={<RoomDetails />} />
+        <Route path="rooms" element={<Rooms />} />
+        <Route path="rooms/:roomId" element={<RoomDetails />} />
+        <Route path="transport" element={<Transport />} />
+        <Route path="reviews" element={<Reviews />} />
+        <Route path="contact" element={<Contact />} />
+        <Route path="booking-status" element={<BookingStatus />} />
+        <Route path="booking/:reference" element={<BookingStatus />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
   );
